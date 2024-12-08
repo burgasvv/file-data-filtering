@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: org.burgas.filedatafiltering.Main
+Class-Path: out/production/file-data-filtering/org/burgas/filedatafilter
+ ing/Main.class
+
