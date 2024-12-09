@@ -33,14 +33,14 @@ public class Main {
                     return;
                 }
                 inputFiles = true;
-                System.out.println("Файл для чтения: " + arg + " ✓");
+                System.out.println("Файл для чтения: " + arg + " получен");
             }
 
         if (inputFiles) {
             System.out.println(ARGUMENTS_RECEIVED_SUCCESSFULLY);
             System.out.printf(ARGUMENTS, Arrays.toString(args) + "\n");
             FileFilter fileFilter = new FileFilter(args);
-            System.out.println(fileFilter.getArgHandler());
+            System.out.println("\nОбработчик аргументов: " + fileFilter.getArgHandler());
             fileFilter.filter();
             System.out.println(fileFilter.getStatistics());
 
