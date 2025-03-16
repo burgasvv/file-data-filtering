@@ -1,17 +1,19 @@
 package org.burgas.filedatafiltering.io;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static java.lang.System.out;
 
 /**
  * Класс реализации для работы с файлами и потоками чтения и записи;
  */
 public class IoFileLibrary implements IoLibrary {
 
-    private final Map<String, BufferedReader> readers = new HashMap<>();
-    private final Map<String, BufferedWriter> writers = new HashMap<>();
+    private final ConcurrentHashMap<String, BufferedReader> readers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, BufferedWriter> writers = new ConcurrentHashMap<>();
 
     /**
      * Добавление потока для чтения ассоциативный массив;
@@ -40,7 +42,7 @@ public class IoFileLibrary implements IoLibrary {
     @Override
     public void removeReader(String fileName) {
         try (BufferedReader _ = readers.remove(fileName)) {
-            System.out.println("Поток чтения удален для файла: " + fileName);
+            out.println("Поток чтения удален для файла: " + fileName);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -54,7 +56,7 @@ public class IoFileLibrary implements IoLibrary {
     @Override
     public void removeWriter(String fileName) {
         try (BufferedWriter _ = writers.remove(fileName)) {
-            System.out.println("Поток записи удален для файла: " + fileName);
+            out.println("Поток записи удален для файла: " + fileName);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -78,7 +80,7 @@ public class IoFileLibrary implements IoLibrary {
      * @param fileName наименование и путь к файлу;
      * @param append   параметр режима записи (с добавлением или перезаписью);
      * @return поток записи в файл;
-     * @throws IOException исключение, получаемое по причине возникших проблем c созданием потока для записи;
+     * @throws IOException исключение, получаемое по причине возникших проблем с созданием потока для записи;
      */
     public BufferedWriter createFileWriter(String fileName, boolean append) throws IOException {
         return new BufferedWriter(

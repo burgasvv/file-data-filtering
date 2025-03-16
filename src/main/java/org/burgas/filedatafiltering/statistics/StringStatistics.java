@@ -1,21 +1,21 @@
 package org.burgas.filedatafiltering.statistics;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Класс реализации для оперирования данными статистики по строковым значениям;
  */
 public class StringStatistics implements Statistics<String> {
 
-    private final List<String> strings;
+    private final CopyOnWriteArrayList<String> strings;
 
     /**
      * Конструктор для создания объекта класса и списка элементов строковых значений;
      */
     public StringStatistics() {
-        strings = new ArrayList<>();
+        strings = new CopyOnWriteArrayList<>();
     }
 
     /**

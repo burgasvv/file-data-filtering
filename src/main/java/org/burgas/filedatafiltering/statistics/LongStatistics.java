@@ -1,21 +1,21 @@
 package org.burgas.filedatafiltering.statistics;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Класс реализации для оперирования данными статистики по целым числам;
  */
 public class LongStatistics implements Statistics<Long> {
 
-    private final List<Long> values;
+    private final CopyOnWriteArrayList<Long> values;
 
     /**
      * Конструктор для создания объекта класса и списка элементов целых чисел;
      */
     public LongStatistics() {
-        values = new ArrayList<>();
+        values = new CopyOnWriteArrayList<>();
     }
 
     /**

@@ -1,21 +1,21 @@
 package org.burgas.filedatafiltering.statistics;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Класс реализации для оперирования данными статистики по вещественным числам;
  */
 public class FloatStatistics implements Statistics<Float> {
 
-    private final List<Float> values;
+    private final CopyOnWriteArrayList<Float> values;
 
     /**
      * Конструктор для создания объекта класса и списка элементов вещественных чисел;
      */
     public FloatStatistics() {
-        values = new ArrayList<>();
+        values = new CopyOnWriteArrayList<>();
     }
 
     /**

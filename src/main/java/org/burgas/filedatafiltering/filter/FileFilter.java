@@ -10,6 +10,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+
+import static java.lang.String.*;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 
 /**
  * Класс, позволяющий считывать данные из файлов,
@@ -89,38 +95,61 @@ public class FileFilter {
     /**
      * Метод, в котором происходит считывание информации в виде строкового типа данных из полученных файлов,
      * преобразование в целочисленные и вещественные типы данных и запись в соответствующие их типу файлы;
-     * @throws IOException исключение, получаемое в случае невозможности записи;
      */
-    public void filter() throws IOException {
+    public void filter() {
 
         Map<String, String> resultPathMap = argHandler.getOutputFilePathsMap();
 
-        for (Map.Entry<String, BufferedReader> entry : ioFileLibrary.getReaders().entrySet()) {
-            BufferedReader reader = entry.getValue();
+        try (ExecutorService executorService = newCachedThreadPool()){
+            CopyOnWriteArrayList<Callable<String>> callables = new CopyOnWriteArrayList<>();
 
-            while (reader.ready()) {
-                String line = reader.readLine();
+            for (Map.Entry<String, BufferedReader> entry : ioFileLibrary.getReaders().entrySet()) {
 
-                try {
-                    long aLong = Long.parseLong(line);
-                    longStatistics.add(aLong);
-                    this.writeToFile(resultPathMap.get("integers"), String.valueOf(aLong));
-
-                } catch (NumberFormatException e) {
-
+                Callable<String> callable = () -> {
+                    BufferedReader reader = entry.getValue();
                     try {
-                        float aFloat = Float.parseFloat(line);
-                        floatStatistics.add(aFloat);
-                        this.writeToFile(resultPathMap.get("floats"), String.valueOf(aFloat));
+                        while (reader.ready()) {
+                            String line = reader.readLine();
 
-                    } catch (NumberFormatException e2) {
+                            try {
+                                long aLong = Long.parseLong(line);
+                                synchronized (FileFilter.class) {
+                                    longStatistics.add(aLong);
+                                    this.writeToFile(resultPathMap.get("integers"), valueOf(aLong));
+                                }
 
-                        stringStatistics.add(line);
-                        this.writeToFile(resultPathMap.get("strings"), line);
+                            } catch (NumberFormatException e) {
+
+                                try {
+                                    float aFloat = Float.parseFloat(line);
+                                    synchronized (FileFilter.class) {
+                                        floatStatistics.add(aFloat);
+                                        this.writeToFile(resultPathMap.get("floats"), valueOf(aFloat));
+                                    }
+
+                                } catch (NumberFormatException e2) {
+                                    synchronized (FileFilter.class) {
+                                        stringStatistics.add(line);
+                                        this.writeToFile(resultPathMap.get("strings"), line);
+                                    }
+                                }
+                            }
+                        }
+                        return "It's ok, document ready";
+
+                    } catch (RuntimeException | IOException e) {
+                        throw new RuntimeException(e);
                     }
-                }
+                };
+
+                callables.add(callable);
             }
+            executorService.invokeAll(callables);
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+
     }
 
     /**
